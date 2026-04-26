@@ -1,0 +1,72 @@
+package com.senac.backend.backend.config;
+
+import com.senac.backend.backend.services.TokenService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.Collections;
+
+@Component
+public class JWTFilter extends OncePerRequestFilter {
+
+    @Autowired
+    private TokenService tokenService;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+
+        String path = request.getRequestURI();
+
+        //liberação de metodos para não travar o token jwt
+        //adionar a land page aqui
+        if (path.equals("/auth/login") || path.startsWith("/swagger-ui")
+                //|| path.equals("/animais") //if ((path.equals("/animais") && method.equalsIgnoreCase("GET"))
+                || path.startsWith("/webjars")
+                || path.startsWith("/swagger-resources")
+                || path.startsWith("/v3/api-docs")
+                || request.getMethod().startsWith("OPTIONS"))
+        {
+            filterChain.doFilter(request,response);
+            return;
+        }
+        //fazendo testes
+
+        String header = request.getHeader("Authorization");
+
+        if(header != null && header.startsWith("Bearer ")){
+            String token = header.replace("Bearer ", "");
+
+            //Validar TOken JWT
+            var retornotoken =tokenService.validarToken(token);
+
+            var usuarioLogado  = retornotoken;
+
+            UsernamePasswordAuthenticationToken usuario = new UsernamePasswordAuthenticationToken(
+                    usuarioLogado,
+                    null,
+                    usuarioLogado.getAuthorities()
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(usuario);
+
+            //System.out.println("Usuario autenticado!" + username);
+
+            //validar token jwt
+        }else {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write("Token não informado ou inválido");
+        return;
+        }
+        filterChain.doFilter(request,response);
+    }
+}
