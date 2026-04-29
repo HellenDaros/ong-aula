@@ -7,43 +7,34 @@ import { useAuth} from "../context/AuthContext";
 import axios from "axios";
 import { Usuario } from "../types/usuarios";
 import { LoginResponse } from "../types/auth";
+import { loginRequest } from "../services/authService";
 
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
 
   const handleLogin = async (formData: FormData) => {
-    const email = formData.get("email");
-    const senha = formData.get("senha");
+  const email = formData.get("email") as string;
+  const senha = formData.get("senha") as string;
 
-    try {
-      // var loginResult = await fetch("http://loaclhost:8080/auth/login",{
-      //   method:'POST',
-      //   headers:{
-      //     'Content-Type': 'aplication/json'
-      //   },
-      //   body: JSON.stringify({email:email, senha: senha})
-      // });
-      var loginResult = await axios.post<LoginResponse>(
-        "http://localhost:8080/auth/login",
-        { email: email, senha: senha },
-      );
+  try {
+    const data = await loginRequest({ email, senha });
 
-      if (loginResult.status !== 200) {
-        alert("Usuario ou senha inválido!");
-        return;
-      }
-
-      const usuarioMock = new Usuario(1, "Hellen Daros", "46566356", "ATIVO");
-      login(usuarioMock, loginResult.data.token);
-      console.log(`Autenticas com email: ${email}`);
-
-      router.push("/home");
-    } catch (error) {
-      alert("Erro ao entrar no sistema");
+    if (!data) {
+      alert("Usuário ou senha inválido!");
       return;
     }
-  };
+
+    const usuarioMock = new Usuario(1, "Hellen Daros", "46566356", "ATIVO");
+
+    login(usuarioMock, data.token);
+
+    router.push("/home");
+  } catch (error) {
+    console.error("Erro ao entrar no sistema:", error);
+    alert("Erro ao entrar no sistema");
+  }
+};
 
   return (
     <div className="min-h-screen w-full bg-stone-50 flex flex-col justify-center items-center p-6">

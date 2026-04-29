@@ -3,25 +3,22 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, MapPin, Calendar, ArrowRight, Heart } from "lucide-react";
-import axios from "axios";
-import { Animal, useAnimal } from "@/app/context/AnimalContext";
+import { useAnimal } from "@/app/context/AnimalContext";
+import { Animal } from "@/app/types/animal";
+import { buscarListaAnimais } from "@/app/services/animalService";
 
 export default function GaleriaPage() {
   const [listaAnimais, setListaAnimais] = useState<Animal[]>([]);
   const { adicionarFavorito, removerFavorito, isFavorito } = useAnimal();
 
-  const carregarDados = async () => {
-    try {
-      const response = await axios.get<Animal[]>(
-        "http://localhost:8080/animais",
-      );
-      if (response.status === 200) {
-        setListaAnimais(response.data);
-      }
-    } catch (error) {
-      console.error("Erro ao carregar galeria:", error);
-    }
-  };
+const carregarDados = async () => {
+  try {
+    const data = await buscarListaAnimais();
+    setListaAnimais(data);
+  } catch (error) {
+    console.error("Erro ao carregar galeria:", error);
+  }
+};
 
   useEffect(() => {
     carregarDados();

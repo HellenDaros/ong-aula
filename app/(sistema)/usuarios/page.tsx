@@ -1,8 +1,6 @@
 'use client'
-import { UsuarioMock } from "@/app/mock/usuario";
 import { alterarStatusUsuario, buscarListaUsuarios } from "@/app/services/usuarioService";
 import { Usuario } from "@/app/types/usuarios";
-import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 

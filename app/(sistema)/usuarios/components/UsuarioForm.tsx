@@ -2,16 +2,13 @@
 import { useState } from "react"
 import Link  from 'next/link';
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import { Usuario, UsuarioFormProps } from "@/app/types/usuarios";
-
+import { salvarUsuario } from "@/app/services/usuarioService";
 
 export default function UsuarioForm({usuarioExistente} : UsuarioFormProps ){
 
     const router = useRouter()
     const [usuario, setUsuario] = useState<Usuario>(usuarioExistente||new Usuario(null,'','',"ATIVO"))
-
-    // const isEdicao = !!usuarioExistente;
 
     const handleChange = (campo: 'name' | 'email', valor: string) => {
     setUsuario(prev =>
@@ -21,37 +18,26 @@ export default function UsuarioForm({usuarioExistente} : UsuarioFormProps ){
          campo === 'email'? valor: prev.email,
          prev.status
     ))
-
-
 }
+
 const handleSalvar = async (formData: FormData) => {
+  const isEdicao = !!usuarioExistente;
 
-  if(usuarioExistente){
+  const sucesso = await salvarUsuario(usuario, isEdicao);
 
-         var dadosResult = await axios.put<number>('http://localhost:8080/usuarios/' +usuarioExistente.id, usuario);
-
-         if(dadosResult.status !== 200){
-          return;
-         }
-  alert(dadosResult.data)
-    }else{
-
-     var dadosResult = await axios.post<number>('http://localhost:8080/usuarios',usuario);
-
-     if(dadosResult.status !==200){
-      return;
-     }
-  alert("Usuário salvo com sucesso!" + dadosResult.data)
+  if (!sucesso) {
+    alert("Erro ao salvar usuário");
+    return;
   }
 
-     router.push("/usuarios")
-    }
+  alert("Usuário salvo com sucesso!");
+  router.push("/usuarios");
+};
 
 return (
   <div className="flex-1 flex items-center justify-center p-6">
     <div className="w-full max-w-lg bg-white rounded-[2.5rem] shadow-xl shadow-stone-200/50 border border-stone-100 overflow-hidden">
 
-      {/* Cabeçalho do Formulário */}
       <div className="bg-stone-50/50 px-10 py-8 border-b border-stone-100">
         <h2 className="text-2xl font-black text-slate-800 tracking-tight">Dados do Usuário</h2>
         <p className="text-slate-500 text-sm font-medium">Preencha as informações para salvar o cadastro.</p>
@@ -59,7 +45,6 @@ return (
 
       <form action={handleSalvar} className="p-10 space-y-6">
 
-        {/* Campo: Nome */}
         <div className="space-y-2">
           <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1">
             Nome completo
@@ -74,7 +59,6 @@ return (
           />
         </div>
 
-        {/* Campo: CPF */}
         <div className="space-y-2">
           <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1">
             E-mail
@@ -89,7 +73,6 @@ return (
           />
         </div>
 
-        {/* Ações */}
         <div className="flex items-center gap-4 pt-4">
           <Link
             href="/usuarios"

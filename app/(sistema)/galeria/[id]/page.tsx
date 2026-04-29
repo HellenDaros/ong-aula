@@ -3,9 +3,10 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { Animal, useAnimal } from "@/app/context/AnimalContext";
+import { useAnimal } from "@/app/context/AnimalContext";
 import { ChevronLeft, Heart, Share2 } from "lucide-react";
-import axios from "axios";
+import { Animal } from "@/app/types/animal";
+import { buscarAnimalPorId } from "@/app/services/animalService";
 
 export default function DetalhesAnimalPage() {
   const params = useParams();
@@ -15,23 +16,24 @@ export default function DetalhesAnimalPage() {
   const [animal, setAnimal] = useState<Animal | null>(null);
   const [carregando, setCarregando] = useState(true);
 
-  useEffect(() => {
-    const buscarDados = async () => {
-      try {
-        if (params.id) {
-          const response = await axios.get<Animal>(
-            `http://localhost:8080/animais/${params.id}`,
-          );
-          if (response.data) setAnimal(response.data);
+useEffect(() => {
+  const buscarDados = async () => {
+    try {
+      if (params.id) {
+        const data = await buscarAnimalPorId(Number(params.id));
+        if(data){
+        setAnimal(data);
         }
-      } catch (error) {
-        console.error("Erro ao buscar pet:", error);
-      } finally {
-        setCarregando(false);
       }
-    };
-    buscarDados();
-  }, [params.id]);
+    } catch (error) {
+      console.error("Erro ao buscar pet:", error);
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  buscarDados();
+}, [params.id]);
 
   if (carregando) {
     return (
