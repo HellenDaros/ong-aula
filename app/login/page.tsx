@@ -1,10 +1,8 @@
 "use client";
 
 import { Mail, Lock, ArrowRight, PawPrint } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth} from "../context/AuthContext";
-import axios from "axios";
 import { Usuario } from "../types/usuarios";
 import { LoginResponse } from "../types/auth";
 import { loginRequest } from "../services/authService";
