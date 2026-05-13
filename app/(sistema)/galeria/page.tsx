@@ -3,22 +3,22 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, MapPin, Calendar, ArrowRight, Heart } from "lucide-react";
-import { useAnimal } from "@/app/context/AnimalContext";
 import { Animal } from "@/app/types/animal";
 import { buscarListaAnimais } from "@/app/services/animalService";
+import { useFavoritos } from "@/app/redux/useFavoritos";
 
 export default function GaleriaPage() {
   const [listaAnimais, setListaAnimais] = useState<Animal[]>([]);
-  const { adicionarFavorito, removerFavorito, isFavorito } = useAnimal();
+  const { addFavorito, removeFavorito, isFavorito } = useFavoritos();
 
-const carregarDados = async () => {
-  try {
-    const data = await buscarListaAnimais();
-    setListaAnimais(data);
-  } catch (error) {
-    console.error("Erro ao carregar galeria:", error);
-  }
-};
+  const carregarDados = async () => {
+    try {
+      const data = await buscarListaAnimais();
+      setListaAnimais(data);
+    } catch (error) {
+      console.error("Erro ao carregar galeria:", error);
+    }
+  };
 
   useEffect(() => {
     carregarDados();
@@ -30,9 +30,9 @@ const carregarDados = async () => {
 
     if (animal.id !== null) {
       if (isFavorito(animal.id)) {
-        removerFavorito(animal.id);
+        removeFavorito(animal.id);
       } else {
-        adicionarFavorito(animal);
+        addFavorito(animal);
       }
     }
   };

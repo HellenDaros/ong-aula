@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { Heart, MapPin, Calendar, ArrowRight, Trash2 } from "lucide-react";
-import { useAnimal } from "@/app/context/AnimalContext";
+import { useFavoritos } from "@/app/redux/useFavoritos";
 
 export default function FavoritosPage() {
-  const { favoritos, removerFavorito } = useAnimal();
+  const { favoritos, removeFavorito } = useFavoritos();
 
   return (
     <div className="w-full max-w-7xl mx-auto p-6 sm:p-8 pt-4">
@@ -33,7 +33,7 @@ export default function FavoritosPage() {
             className="group bg-white rounded-[2.5rem] overflow-hidden border border-stone-100 shadow-md transition-all hover:-translate-y-2 hover:shadow-xl relative"
           >
             <button
-              onClick={() => animal.id && removerFavorito(animal.id)}
+              onClick={() => animal.id && removeFavorito(animal.id)}
               className="absolute top-4 right-4 z-10 p-2.5 bg-red-500 text-white rounded-2xl transition-all shadow-lg hover:bg-red-600 active:scale-90"
               title="Remover dos favoritos"
             >

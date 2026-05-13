@@ -1,8 +1,7 @@
-'use client'
+"use client";
 import { useDispatch } from "react-redux";
-import { useAuth } from "../context/AuthContext";
 import { logout } from "../redux/slices/authSlice";
-import { store } from "../redux/store"
+import { store } from "../redux/store";
 
 export default function Header() {
   // const { usuario, logout } = useAuth();
@@ -16,18 +15,17 @@ export default function Header() {
     <header className="bg-[#f1f5f4] border-b border-stone-200 px-6 py-3">
       {/* O max-w-7xl garante que o conteúdo interno não espalhe mais que a galeria */}
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        
         {/* Lado Esquerdo: Perfil */}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center shadow-sm">
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="white" 
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
               className="w-5 h-5"
-              strokeWidth="2.5" 
-              strokeLinecap="round" 
+              strokeWidth="2.5"
+              strokeLinecap="round"
               strokeLinejoin="round"
             >
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -45,16 +43,22 @@ export default function Header() {
         </div>
 
         {/* Lado Direito: Botão Sair */}
-        <button type="button" className="group relative flex items-center" onClick={(e)=>{ dispatch(logout()); }}>
+        <button
+          type="button"
+          className="group relative flex items-center"
+          onClick={(e) => {
+            dispatch(logout());
+          }}
+        >
           <div className="flex items-center gap-2 bg-[#1e293b] hover:bg-orange-500 text-white pl-5 pr-8 py-2.5 rounded-full font-bold transition-all duration-300 shadow-lg z-10">
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
               className="w-4 h-4 text-white"
-              strokeWidth="2.5" 
-              strokeLinecap="round" 
+              strokeWidth="2.5"
+              strokeLinecap="round"
               strokeLinejoin="round"
             >
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -64,7 +68,6 @@ export default function Header() {
             <span className="text-sm">Sair</span>
           </div>
         </button>
-
       </div>
     </header>
   );

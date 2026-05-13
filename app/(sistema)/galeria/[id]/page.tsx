@@ -3,37 +3,37 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useAnimal } from "@/app/context/AnimalContext";
 import { ChevronLeft, Heart, Share2 } from "lucide-react";
 import { Animal } from "@/app/types/animal";
 import { buscarAnimalPorId } from "@/app/services/animalService";
+import { useFavoritos } from "@/app/redux/useFavoritos";
 
 export default function DetalhesAnimalPage() {
   const params = useParams();
   const router = useRouter();
-  const { adicionarFavorito, removerFavorito, isFavorito } = useAnimal();
+  const { addFavorito, removeFavorito, isFavorito } = useFavoritos();
 
   const [animal, setAnimal] = useState<Animal | null>(null);
   const [carregando, setCarregando] = useState(true);
 
-useEffect(() => {
-  const buscarDados = async () => {
-    try {
-      if (params.id) {
-        const data = await buscarAnimalPorId(Number(params.id));
-        if(data){
-        setAnimal(data);
+  useEffect(() => {
+    const buscarDados = async () => {
+      try {
+        if (params.id) {
+          const data = await buscarAnimalPorId(Number(params.id));
+          if (data) {
+            setAnimal(data);
+          }
         }
+      } catch (error) {
+        console.error("Erro ao buscar pet:", error);
+      } finally {
+        setCarregando(false);
       }
-    } catch (error) {
-      console.error("Erro ao buscar pet:", error);
-    } finally {
-      setCarregando(false);
-    }
-  };
+    };
 
-  buscarDados();
-}, [params.id]);
+    buscarDados();
+  }, [params.id]);
 
   if (carregando) {
     return (
@@ -64,9 +64,7 @@ useEffect(() => {
             <button
               onClick={() => {
                 if (animal.id)
-                  favoritado
-                    ? removerFavorito(animal.id)
-                    : adicionarFavorito(animal);
+                  favoritado ? removeFavorito(animal.id) : addFavorito(animal);
               }}
               className={`p-3 rounded-2xl transition-all shadow-sm border ${
                 favoritado

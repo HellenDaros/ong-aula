@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AnimalProvider } from "./context/AnimalContext";
 import StoreProvider from "./redux/storeProvider";
 
 const geistSans = Geist({
@@ -30,19 +29,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-
-
   return (
     <html lang="pt-BR">
       <body>
-        <StoreProvider>
-
-          <AnimalProvider>
-      {children}
-      </AnimalProvider>
-
-      </StoreProvider>
+        <StoreProvider>{children}</StoreProvider>
       </body>
     </html>
   );

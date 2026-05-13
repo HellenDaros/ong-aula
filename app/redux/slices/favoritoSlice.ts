@@ -1,23 +1,46 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { Animal } from "@/app/types/animal";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
 
-const initialState = {
-    animais: []
+interface FavoritoState {
+  items: Animal[];
 }
 
-const favoritosSlice = createSlice(
-    {
-        name:'favoritos',
-        initialState,
-        reducers:{
-            adicionarFavoritos: (state, action: PayloadAction<{animais: string}> ) =>{
-         
-            } ,
-            removerFavoritos : (state, action: PayloadAction<{animais: string}> ) =>{
-               
-            }
-        }
-    }
-);
+const favoritosRecover = Cookies.get("favoritos_petrescue");
 
-export const { adicionarFavoritos, removerFavoritos } = favoritosSlice.actions;
-export default favoritosSlice.reducer;
+const initialState: FavoritoState = {
+  items: favoritosRecover ? JSON.parse(favoritosRecover) : [],
+};
+
+const favoritoSlice = createSlice({
+  name: "favoritos",
+  initialState,
+  reducers: {
+    setFavoritos: (state, action: PayloadAction<Animal[]>) => {
+      state.items = action.payload;
+      Cookies.set("favoritos_petrescue", JSON.stringify(state.items), {
+        expires: 30,
+      });
+    },
+    adicionarFavorito: (state, action: PayloadAction<Animal>) => {
+      if (!state.items.some((fav) => fav.id === action.payload.id)) {
+        state.items.push(action.payload);
+        Cookies.set("favoritos_petrescue", JSON.stringify(state.items), {
+          expires: 30,
+        });
+      }
+    },
+    removerFavorito: (state, action: PayloadAction<number>) => {
+      state.items = state.items.filter(
+        (animal) => animal.id !== action.payload,
+      );
+      Cookies.set("favoritos_petrescue", JSON.stringify(state.items), {
+        expires: 30,
+      });
+    },
+  },
+});
+
+export const { setFavoritos, adicionarFavorito, removerFavorito } =
+  favoritoSlice.actions;
+export default favoritoSlice.reducer;
