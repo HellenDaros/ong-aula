@@ -1,17 +1,14 @@
 package com.senac.backend.backend.application.services;
-
-import com.senac.backend.backend.application.DTO.LoginRequest;
-import com.senac.backend.backend.application.DTO.UsuarioAdmRequest;
-import com.senac.backend.backend.application.DTO.UsuarioRequest;
-import com.senac.backend.backend.application.DTO.UsuarioResponse;
+import com.senac.backend.backend.application.DTO.*;
 import com.senac.backend.backend.domain.entities.Usuario;
 import com.senac.backend.backend.domain.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Service
 public class UsuarioService {
@@ -44,10 +41,11 @@ public class UsuarioService {
         }
     }
 
-    public Usuario BuscarUsuarioLogado(Usuario usuario) {
-
+    public UsuarioResponse BuscarUsuarioLogado(Authentication authentication) {
+        Usuario usuario = (Usuario) authentication.getPrincipal();
         try{
-            return   usuarioRepository.findById(usuario.getId()).orElse(null);
+            return  usuarioRepository.findById(usuario.getId())
+                    .stream().map(UsuarioResponse::new).findFirst().orElse(null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -63,16 +61,14 @@ public class UsuarioService {
 
     }
 
-    public boolean AterarUsuario(Long id, Usuario usuario) {
+    public boolean AterarUsuario(Long id, UsuarioRequest usuario) {
 
         var usuarioBanco = usuarioRepository.findById(id).orElse(null);
 
         if (usuarioBanco != null){
-            usuarioBanco.setEmail(usuario.getEmail());
-            usuarioBanco.setName(usuario.getName());
-            usuarioBanco.setSenha(usuario.getSenha());
-            usuarioBanco.setStatus(usuario.getStatus());
-
+            usuarioBanco.setEmail(usuario.email());
+            usuarioBanco.setName(usuario.name());
+            usuarioBanco.setSenha(usuario.senha());
 
             usuarioRepository.save(usuarioBanco);
 
@@ -98,4 +94,19 @@ public class UsuarioService {
         }
 
     }
+
+    public boolean AlterarStatus(Long id, AlterarStatusRequest statusRequest) {
+
+        var usuarioBanco = usuarioRepository.findById(id).orElse(null);
+
+        if (usuarioBanco != null){
+
+            usuarioBanco.setStatus(statusRequest.status());
+            usuarioRepository.save(usuarioBanco);
+
+            return true;
+        }
+        return false;
+    }
 }
+

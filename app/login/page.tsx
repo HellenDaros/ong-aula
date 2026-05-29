@@ -3,9 +3,10 @@
 import { Mail, Lock, ArrowRight, PawPrint } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Usuario } from "../types/usuarios";
-import { loginResult } from "../services/authService";
+import { loginService } from "../services/authService";
 import { useDispatch } from "react-redux";
-import { login } from "../redux/slices/authSlice";
+import { setToken, setUsuario } from "../redux/slices/authSlice";
+import { buscarUsuarioLogado } from "../services/usuarioService";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,28 +14,36 @@ export default function LoginPage() {
   const dispatch = useDispatch();
 
   const handleLogin = async (formData: FormData) => {
-  const email = formData.get("email") as string;
-  const senha = formData.get("senha") as string;
+    const email = formData.get("email")?.toString() ?? "";
+    const senha = formData.get("senha")?.toString() ?? "";
 
-  try {
-    const data = await loginResult({ email, senha });
+    try {
+      const loginResult = await loginService({ email: email, senha: senha });
+      if (!loginResult.token) {
+        alert("Usuario ou senha invalido!");
+        return;
+      }
+      var token = loginResult.token;
 
-    if (!data) {
-      alert("Usuário ou senha inválido!");
-      return;
+      dispatch(
+        setToken({
+          token: token,
+        }),
+      );
+      const usuario = await buscarUsuarioLogado();
+
+      dispatch(
+        setUsuario({
+          usuario: { ...usuario },
+        }),
+      );
+
+      router.push("/home");
+    } catch (error) {
+      console.error("Erro ao entrar no sistema:", error);
+      alert("Erro ao entrar no sistema");
     }
-
-    const usuarioMock = new Usuario(1, "Hellen Daros", "46566356", "ATIVO");
-
-    dispatch(login({usuario: {...usuarioMock}, token: data.token}))
-    // login(usuarioMock, data.token);
-
-    router.push("/home");
-  } catch (error) {
-    console.error("Erro ao entrar no sistema:", error);
-    alert("Erro ao entrar no sistema");
-  }
-};
+  };
 
   return (
     <div className="min-h-screen w-full bg-stone-50 flex flex-col justify-center items-center p-6">

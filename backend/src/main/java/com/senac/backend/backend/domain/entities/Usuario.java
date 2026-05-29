@@ -3,6 +3,7 @@ package com.senac.backend.backend.domain.entities;
 import com.senac.backend.backend.application.DTO.UsuarioAdmRequest;
 import com.senac.backend.backend.application.DTO.UsuarioRequest;
 import com.senac.backend.backend.domain.enuns.EnumStatusUsuario;
+import com.senac.backend.backend.domain.valueobjects.CPF;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,6 +29,9 @@ public class Usuario implements UserDetails {
 
     private String name;
 
+    @Embedded
+    private CPF cpf;
+
     private String email;
 
     private String senha;
@@ -39,6 +43,7 @@ public class Usuario implements UserDetails {
     public Usuario(UsuarioRequest usuario) {
         this.email =usuario.email();
         this.name = usuario.name();
+        this.cpf = new CPF(usuario.cpf());
         this.senha = usuario.senha();
         this.role = "ROLE_USER";
     }
@@ -46,6 +51,7 @@ public class Usuario implements UserDetails {
     public Usuario(UsuarioAdmRequest usuario) {
         this.email =usuario.email();
         this.name = usuario.name();
+        this.cpf = new CPF(usuario.cpf());
         this.senha = usuario.senha();
         this.role = "ROLE_ADMIN";
     }
